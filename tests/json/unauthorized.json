@@ -1,0 +1,10 @@
+{
+	"meta": {
+		"httpStatus": "401 - Unauthorized",
+		"error": {
+			"errorMessage": "Unrecognized X-API-TOKEN.",
+			"errorCode": "DCD_7"
+		},
+		"requestId": "ea883bdc-d749-59b3-bb17-69161f2bc3be"
+	}
+}

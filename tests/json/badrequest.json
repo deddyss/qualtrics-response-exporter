@@ -1,0 +1,10 @@
+{
+	"meta": {
+		"httpStatus": "400 - Bad Request",
+		"error": {
+			"errorMessage": "An apiToken must be provided.",
+			"errorCode": "ATC_1"
+		},
+		"requestId": "f815bedc-f842-5a5b-8b96-eaec3448b420"
+	}
+}

@@ -1,0 +1,10 @@
+{
+	"meta": {
+		"httpStatus": "404 - Not Found",
+		"error": {
+			"errorMessage": "Resource not found",
+			"errorCode": "UNF_9"
+		},
+		"requestId": "b2ed6d34-33e6-56c4-b065-ef6dbdac8b10"
+	}
+}

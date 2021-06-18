@@ -1,0 +1,16 @@
+npm init
+
+npm install --global eslint eslint-plugin-import @typescript-eslint/parser eslint-import-resolver-typescript
+npm install --global jshint
+npm install --global jest
+
+npm install --save-dev typescript ts-node tsconfig-paths
+npm install --save-dev jest ts-jest @types/jest @types/debug
+
+npm install --save tslib
+npm install --save debug
+npm install --save axios
+
+npx ts-jest config:init
+
+tsc --init

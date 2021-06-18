@@ -1,0 +1,31 @@
+{
+	"result": {
+		"elements": [{
+			"id": "SV_NuVS0TDi9gLvnhb",
+			"name": "Survey #1",
+			"ownerId": "UR_EK29eyqYwwmDa9J",
+			"lastModified": "2020-07-01T18:51:00Z",
+			"creationDate": "2020-06-23T22:53:51Z",
+			"isActive": true
+		}, {
+			"id": "SV_Sj3BN8oE6Aiaw6o",
+			"name": "Survey #2",
+			"ownerId": "UR_EK29eyqYwwmDa9J",
+			"lastModified": "2020-09-15T18:28:36Z",
+			"creationDate": "2020-06-23T22:43:03Z",
+			"isActive": false
+		}, {
+			"id": "SV_FJ6Y8mYLP1z7OzJ",
+			"name": "Survey #3",
+			"ownerId": "UR_EK29eyqYwwmDa9J",
+			"lastModified": "2020-06-23T22:34:47Z",
+			"creationDate": "2020-05-31T00:52:59Z",
+			"isActive": true
+		}],
+		"nextPage": "https://syd1.qualtrics.com/API/v3/surveys?offset=3"
+	},
+	"meta": {
+		"httpStatus": "200 - OK",
+		"requestId": "ed7fe324-37bd-5891-a293-b96c6ab876a7"
+	}
+}

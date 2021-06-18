@@ -1,0 +1,16 @@
+{
+	"result": {
+		"brandId": "wellknownbrand",
+		"userId": "UR_EK29eyqYwwmDa9J",
+		"userName": "userid#wellknownbrand",
+		"accountType": "ijygtTKZ2u1SnmFKc4",
+		"firstName": "John",
+		"lastName": "Doe",
+		"email": "john.doe@brand.com",
+		"datacenter": "syd1"
+	},
+	"meta": {
+		"requestId": "d946fd73-7754-5302-b887-b6ad3e94ae88",
+		"httpStatus": "200 - OK"
+	}
+}

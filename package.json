@@ -1,0 +1,40 @@
+{
+	"name": "qualtrics-survey-response-exporter",
+	"version": "1.0.0",
+	"description": "Simple tool to export Qualtrics all survey responses, automatically",
+	"main": "./dist/index.js",
+	"scripts": {
+		"test": "jest --verbose"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/deddyss/qualtrics-survey-response-exporter.git"
+	},
+	"keywords": [
+		"qualtrics",
+		"typescript",
+		"javascript",
+		"automation",
+		"debug"
+	],
+	"author": "deddy.setyawan.susanto@gmail.com",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/deddyss/qualtrics-survey-response-exporter/issues"
+	},
+	"homepage": "https://github.com/deddyss/qualtrics-survey-response-exporter#readme",
+	"devDependencies": {
+		"@types/debug": "^4.1.5",
+		"@types/jest": "^26.0.23",
+		"jest": "^27.0.3",
+		"ts-jest": "^27.0.2",
+		"ts-node": "^10.0.0",
+		"tsconfig-paths": "^3.9.0",
+		"typescript": "^4.3.2"
+	},
+	"dependencies": {
+		"axios": "^0.21.1",
+		"debug": "^4.3.1",
+		"tslib": "^2.2.0"
+	}
+}
