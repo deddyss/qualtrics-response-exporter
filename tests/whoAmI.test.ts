@@ -1,7 +1,7 @@
 import axios from "axios";
 import { mocked } from "ts-jest/utils";
 import { ApiErrorResponse, ApiError, WhoAmIResponse } from "@/types";
-import Qualtrics from "@/Qualtrics";
+import Qualtrics from "@/qualtrics";
 import TestUtil from "./util/TestUtil";
 
 jest.mock("axios");

@@ -1,11 +1,11 @@
 const DATA_CENTERS = {
 	"ca1": "Canadian",
-	"iad1": "Washington, DC",
-	"sjc1": "San Joze, California",
 	"fra1": "European Union",
-	"syd1": "Sydney, Australia",
+	"gov1": "US Government",
+	"iad1": "Washington, DC",
 	"sin1": "Singapore",
-	"gov1": "US Government"
+	"sjc1": "San Joze, California",
+	"syd1": "Sydney, Australia"
 };
 
 export default DATA_CENTERS;

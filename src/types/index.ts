@@ -1,3 +1,13 @@
+export interface Preference {
+	dataCenter?: string;
+}
+
+export interface Answer extends Preference {
+	apiToken?: string;
+	savePreferences?: boolean;
+	activeSurveyOnly?: boolean;
+}
+
 export interface ApiConfigParams {
 	dataCenter: string;
 	apiToken: string;

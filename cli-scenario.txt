@@ -1,0 +1,24 @@
+0. Welcome to Qualtrics survey response exporter :)
+Please have your Qualtrics API token and data center ID before proceeding. You could read articles below to find out how, or skip it if you already know:
+- https://www.qualtrics.com/support/integrations/api-integration/overview/#GeneratingAnAPIToken
+- https://www.qualtrics.com/support/integrations/api-integration/finding-qualtrics-ids/#LocatingtheDatacenterID
+
+1. What is your Qualtrics API token?
+2.a. What is your Qualtrics data center ID? 
+2.b. Do you want to use your previous preferences (dataCenter: <data_center>, activeSurveyOnly: <true/false>, exportSurvey: <all/some>, withContinuation: <true/false>, format: <csv/tsv/etc>)? 
+3.a. Hi <FIRSTNAME>, would you like to save your current preferences (except for API token) so next time you don't have to start over?
+3.b. FAILED: Cannot retrieve user information (Unrecognized X-API-TOKEN.)
+4. Do you want to export only your active surveys and exclude the non active ones?
+5. You have <NUMBER_OF_SURVEYS> (active surveys / surveys (including non active ones)). Which surveys do you want to export?
+	> all surveys below
+	> survey 1
+	> survey 2
+	> survey 3
+	> ...
+	> survey n
+6. Do you want to export with continuation? It gives you the ability to export new responses since the last export. The last response from the previous file export is the first response from the export with continuation
+	> Yes, I want to enable continuation
+	> No, full export please
+7. Please select the format of the export file: csv, tsv, json, ndjson, spss, or xml
+
+Your survey responses will be exported immediately

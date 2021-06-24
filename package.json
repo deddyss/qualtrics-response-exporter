@@ -4,6 +4,7 @@
 	"description": "Simple tool to export Qualtrics all survey responses, automatically",
 	"main": "./dist/index.js",
 	"scripts": {
+		"start": "ts-node -r tsconfig-paths/register ./src/main.ts",
 		"test": "jest --verbose"
 	},
 	"repository": {
@@ -25,6 +26,7 @@
 	"homepage": "https://github.com/deddyss/qualtrics-survey-response-exporter#readme",
 	"devDependencies": {
 		"@types/debug": "^4.1.5",
+		"@types/inquirer": "^7.3.2",
 		"@types/jest": "^26.0.23",
 		"jest": "^27.0.3",
 		"ts-jest": "^27.0.2",
@@ -34,7 +36,10 @@
 	},
 	"dependencies": {
 		"axios": "^0.21.1",
+		"chalk": "^4.1.1",
 		"debug": "^4.3.1",
+		"inquirer": "^8.1.1",
+		"ora": "^5.4.1",
 		"tslib": "^2.2.0"
 	}
 }

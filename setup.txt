@@ -6,10 +6,12 @@ npm install --global jest
 
 npm install --save-dev typescript ts-node tsconfig-paths
 npm install --save-dev jest ts-jest @types/jest @types/debug
+npm install --save-dev @types/inquirer
 
 npm install --save tslib
 npm install --save debug
 npm install --save axios
+npm install --save inquirer chalk ora
 
 npx ts-jest config:init
 
