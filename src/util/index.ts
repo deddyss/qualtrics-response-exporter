@@ -17,6 +17,8 @@ export const message = {
 	}
 }
 
+export const isNotEmpty = (array: Array<any>): boolean => array && array.length > 0;
+
 export const sleep = (delay: number = 0): Promise<void> => {
 	return new Promise((resolve) => {
 		if (delay > 0) {

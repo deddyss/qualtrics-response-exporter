@@ -15,15 +15,15 @@ const referenceToChoiceOptions = (): ChoiceOptions[] => {
 	);
 };
 
-const dataCenter: ListQuestionOptions<Answer> = {
+const dataCenterQuestion: ListQuestionOptions<Answer> = {
 	type: "list",
 	name: "dataCenter",
 	message: `What is your ${chalk.bold.yellow("data center ID")}`,
 	default: DEFAULT_DATA_CENTER,
 	choices: referenceToChoiceOptions(),
-	when: (answer: Answer): boolean => !!answer.apiToken,
+	when: (answer: Answer): boolean => answer.dataCenter === undefined,
 	prefix,
 	suffix
 };
 
-export default dataCenter;
+export default dataCenterQuestion;

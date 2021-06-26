@@ -1,11 +1,14 @@
 export interface Preference {
 	dataCenter?: string;
+	activeSurveyOnly?: boolean;
+	lastSelectedSurveys?: string[];
 }
 
 export interface Answer extends Preference {
 	apiToken?: string;
+	loadPreferences?: boolean;
+	selectedSurveys?: string[];
 	savePreferences?: boolean;
-	activeSurveyOnly?: boolean;
 }
 
 export interface ApiConfigParams {

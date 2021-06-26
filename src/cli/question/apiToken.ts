@@ -2,7 +2,7 @@ import { Question } from "inquirer";
 import chalk from "chalk";
 import { prefix, suffix } from "@/util";
 
-const apiToken: Question = {
+const apiTokenQuestion: Question = {
 	type: "input",
 	name: "apiToken",
 	message: `What is your ${chalk.bold.yellow("API token")}`,
@@ -20,4 +20,4 @@ const apiToken: Question = {
 	suffix
 };
 
-export default apiToken;
+export default apiTokenQuestion;

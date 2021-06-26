@@ -12,6 +12,7 @@ npm install --save tslib
 npm install --save debug
 npm install --save axios
 npm install --save inquirer chalk ora
+npm install --save app-root-path
 
 npx ts-jest config:init
 
