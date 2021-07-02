@@ -7,7 +7,7 @@ import TestUtil from "./util/TestUtil";
 jest.mock("axios");
 const mockedAxios = mocked(axios, true);
 
-describe("API: Surveys", () => {
+describe("Qualtrics API: Surveys", () => {
 	beforeEach(() => {
 		mockedAxios.request.mockReset();
 	});

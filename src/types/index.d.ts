@@ -1,3 +1,5 @@
+import { SingleBar } from "cli-progress";
+
 export interface Preference {
 	dataCenter?: string;
 	activeSurveyOnly?: boolean;
@@ -76,3 +78,17 @@ export interface ApiError {
 	statusText: string;
 	message?: string;
 }
+
+export interface PoolParam {
+	port: number;
+	apiToken: string;
+	dataCenter: string;
+}
+
+export interface RunnableParam extends PoolParam{
+	id: string;
+}
+
+export type Runnable = (param: RunnableParam) => Promise<void>;
+
+export class ProgressBar extends SingleBar {}

@@ -6,13 +6,20 @@ npm install --global jest
 
 npm install --save-dev typescript ts-node tsconfig-paths
 npm install --save-dev jest ts-jest @types/jest @types/debug
-npm install --save-dev @types/inquirer
+npm install --save-dev @types/inquirer @types/cli-progress
+npm install --save-dev @types/node
+npm install --save-dev @types/async-lock
+npm install --save-dev webpack webpack-cli ts-loader
+npm install --save-dev tsconfig-paths-webpack-plugin
+npm install --save-dev simple-progress-webpack-plugin
+npm install --save-dev terser-webpack-plugin
+npm install --save-dev threads-plugin
 
 npm install --save tslib
-npm install --save debug
 npm install --save axios
-npm install --save inquirer chalk ora
+npm install --save inquirer chalk ora cli-progress
 npm install --save app-root-path
+npm install --save denque threads async-lock fastify get-port
 
 npx ts-jest config:init
 

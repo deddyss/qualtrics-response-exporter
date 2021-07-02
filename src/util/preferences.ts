@@ -31,5 +31,7 @@ export const savePreferences = (answer: Answer): void => {
 };
 
 export const deletePreferences = (): void => {
-	fs.rmSync(filePreferencesPath);
+	if (isPreferencesExist()) {
+		fs.rmSync(filePreferencesPath);
+	}
 }
