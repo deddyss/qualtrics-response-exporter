@@ -4,29 +4,25 @@ export interface Map<T> {
 	[key: string]: T;
 }
 
-export interface Preference {
+export interface Preferences {
 	dataCenter?: string;
 	activeSurveyOnly?: boolean;
 	lastSelectedSurveys?: string[];
 	exportWithContinuation?: boolean;
 	exportFormat?: string;
+	compressExportFile?: boolean;
 }
 
-export interface Answer extends Preference {
+export interface Answer extends Preferences {
 	apiToken?: string;
 	loadPreferences?: boolean;
 	selectedSurveys?: string[];
 	savePreferences?: boolean;
 }
 
-export interface ApiConfigParams {
+export interface ApiConfiguration {
 	dataCenter: string;
 	apiToken: string;
-}
-export interface WhoAmIConfigParams extends ApiConfigParams {}
-export interface SurveysConfigParams extends ApiConfigParams {}
-export interface ResponseExporterConfigParams extends ApiConfigParams {
-	surveyId: string;
 }
 
 export interface Error {
@@ -66,6 +62,24 @@ export interface ListSurveysResult {
 	nextPage: string | null;
 }
 
+export interface ResponseExportStatus {
+	percentComplete: number;
+	status: "complete" | "failed" | "inProgress";
+	continuationToken?: string;
+}
+export interface StartExportRequestData {
+	format: string;
+	compress: boolean;
+	allowContinuation?: string;
+	continuationToken?: string;
+}
+export interface StartExportResult extends ResponseExportStatus{
+	progressId: string;
+}
+export interface ExportProgressResult extends ResponseExportStatus{
+	fileId?: string;
+}
+
 export interface ApiResponse {
 	meta: Meta;
 }
@@ -77,6 +91,12 @@ export interface WhoAmIResponse extends ApiResponse {
 }
 export interface ListSurveysResponse extends ApiResponse {
 	result: ListSurveysResult;
+}
+export interface StartExportResponse extends ApiResponse {
+	result: StartExportResult;
+}
+export interface ExportProgressResponse extends ApiResponse {
+	result: ExportProgressResult;
 }
 
 export interface ApiError {
@@ -91,6 +111,7 @@ export interface PoolParam {
 	dataCenter: string;
 	exportWithContinuation: boolean;
 	exportFormat: string;
+	compressExportFile: boolean;
 }
 export interface RunnableParam extends PoolParam{
 	id: string;

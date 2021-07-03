@@ -5,12 +5,19 @@ import { spawn, Pool, Worker, FunctionThread } from "threads";
 import Qualtrics from "@/qualtrics";
 import { greeting, info } from "@/cli/statement";
 import { 
-	apiTokenQuestion, dataCenterQuestion, savePreferencesQuestion, activeSurveyOnlyQuestion, selectSurveysQuestion, loadPreferencesQuestion, exportFormatQuestion, exportWithContinuationQuestion 
+	apiTokenQuestion, dataCenterQuestion, savePreferencesQuestion,
+	activeSurveyOnlyQuestion, selectSurveysQuestion, loadPreferencesQuestion,
+	exportFormatQuestion, exportWithContinuationQuestion, compressExportFileQuestion 
 } from "@/cli/question";
 import spinner from "@/cli/spinner";
 import { message, sleep, isNotEmpty } from "@/util";
-import { isPreferencesExist, loadPreferences, savePreferences, deletePreferences, showPreferences } from "@/util/preferences";
-import { Answer, ApiError, PoolParam, Runnable, RunnableParam, Survey, User } from "@/types";
+import {
+	isPreferencesExist, loadPreferences, savePreferences, deletePreferences,
+	showPreferences
+} from "@/util/preferences";
+import {
+	Answer, ApiError, PoolParam, Runnable, RunnableParam, Survey, User
+} from "@/types";
 import { createHttpServer, getAvailablePort } from "@/http/server";
 // @ts-ignore
 import workerUrl from "threads-plugin/dist/loader?name=main!./worker.ts";
@@ -54,7 +61,9 @@ const loadUserInformation = (answer: Answer): Promise<User> => {
 
 const retrieveSurveyList = (answer: Answer): Promise<Survey[]> => {
 	return new Promise(async (resolve, reject) => {
-		spinner.start(answer.activeSurveyOnly === true ? message.survey.load.active : message.survey.load.all);
+		spinner.start(answer.activeSurveyOnly === true ?
+			message.survey.load.active : message.survey.load.all
+		);
 		const surveysApi = new Qualtrics.Surveys({
 			apiToken: answer.apiToken as string,
 			dataCenter: answer.dataCenter as string
@@ -89,7 +98,8 @@ const handlePreferences = (answer: Answer): void => {
 	}
 };
 
-const createPoolAndEnqueueWorker = (param: PoolParam): Pool<FunctionThread<[param: RunnableParam], void>> => {
+const createPoolAndEnqueueWorker = (param: PoolParam)
+	:Pool<FunctionThread<[param: RunnableParam], void>> => {
 	// create worker
 	const worker = new Worker(workerUrl);
 	// create pool
@@ -102,7 +112,9 @@ const createPoolAndEnqueueWorker = (param: PoolParam): Pool<FunctionThread<[para
 	return pool;
 };
 
-const waitUntilAllCompleted = async (pool: Pool<FunctionThread<[param: RunnableParam], void>>) => {
+const waitUntilAllCompleted = async (
+	pool: Pool<FunctionThread<[param: RunnableParam], void>>
+) => {
 		// wait until all worker completed
 		await pool.completed();
 		await pool.terminate();
@@ -133,7 +145,9 @@ const main = async () => {
 		user = await loadUserInformation(answer);
 		// ask if user wants to save preferences and / or retrieve only action surveys
 		answer = await ask([
-				savePreferencesQuestion(user.firstName ? user.firstName as string : user.lastName as string),
+				savePreferencesQuestion(
+					user.firstName ? user.firstName as string : user.lastName as string, user.brandId
+				),
 				activeSurveyOnlyQuestion
 			],
 			answer
@@ -150,8 +164,11 @@ const main = async () => {
 			return;
 		}
 
-		// ask export format and whether user wants to export with continuation
-		answer = await ask([ exportFormatQuestion, exportWithContinuationQuestion ], answer);
+		// ask about export format, whether user wants to export with continuation
+		// and compress the export file
+		answer = await ask([
+			exportFormatQuestion, exportWithContinuationQuestion, compressExportFileQuestion
+		], answer);
 
 		handlePreferences(answer);
 
@@ -168,7 +185,8 @@ const main = async () => {
 			apiToken: answer.apiToken as string,
 			dataCenter: answer.dataCenter as string,
 			exportWithContinuation: answer.exportWithContinuation as boolean,
-			exportFormat: answer.exportFormat as string
+			exportFormat: answer.exportFormat as string,
+			compressExportFile: answer.compressExportFile as boolean
 		});
 
 		await waitUntilAllCompleted(pool);

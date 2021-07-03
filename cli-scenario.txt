@@ -20,5 +20,6 @@ Please have your Qualtrics API token and data center ID before proceeding. You c
 	> Yes, I want to export with continuation
 	> No, full export please
 7. Please select the format of the export file: csv, tsv, json, ndjson, spss, or xml
+8. Do you want to compress the final export file as a ZIP file?
 
 Your survey responses will be exported immediately

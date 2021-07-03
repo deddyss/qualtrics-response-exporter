@@ -1,9 +1,10 @@
-import { Question } from "inquirer";
+import { PasswordQuestionOptions } from "inquirer";
 import chalk from "chalk";
 import { prefix, suffix } from "@/util";
 
-const apiTokenQuestion: Question = {
-	type: "input",
+const apiTokenQuestion: PasswordQuestionOptions = {
+	type: "password",
+	mask: "*",
 	name: "apiToken",
 	message: `What is your ${chalk.bold.yellow("API token")}`,
 	validate: (input?: string) => {

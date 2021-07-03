@@ -20,6 +20,7 @@ npm install --save axios
 npm install --save inquirer chalk ora cli-progress
 npm install --save app-root-path
 npm install --save denque threads async-lock fastify get-port
+npm install --save limiter
 
 npx ts-jest config:init
 

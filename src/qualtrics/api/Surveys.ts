@@ -1,13 +1,12 @@
 import { AxiosError, AxiosResponse } from "axios";
-import { ApiError, ApiErrorResponse, ListSurveysResponse, Survey, SurveysConfigParams } from "@/types";
+import { ApiConfiguration, ApiError, ApiErrorResponse, ListSurveysResponse, Survey } from "@/types";
 import Api from "./Api";
 
-const MODULE = "Surveys";
 const URL = "/surveys";
 
-class Surveys extends Api{
+class Surveys extends Api {
 
-	constructor(config: SurveysConfigParams) {
+	constructor(config: ApiConfiguration) {
 		super(config);
 	}
 

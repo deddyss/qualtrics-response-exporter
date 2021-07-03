@@ -43,10 +43,13 @@ const getSurveyHandler = (queue: Denque<string>): RouteHandlerMethod => {
 	return handler;
 };
 
-export const createHttpServer = (queue: Denque<string>): FastifyInstance => {
+const startProgressBar = (total: number): void => {
+	// print new line
 	console.log();
-	progressBar.start(queue.length, 0);
+	progressBar.start(total, 0);
+};
 
+export const createHttpServer = (queue: Denque<string>): FastifyInstance => {
 	const server = fastify({
 		logger: false
 	});
@@ -57,6 +60,7 @@ export const createHttpServer = (queue: Denque<string>): FastifyInstance => {
 		handler: getSurveyHandler(queue)
 	});
 
+	startProgressBar(queue.length);
 	return server;
 };
 

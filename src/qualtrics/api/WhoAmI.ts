@@ -1,13 +1,12 @@
 import { AxiosResponse, AxiosError } from "axios";
-import { ApiErrorResponse, User, WhoAmIConfigParams, WhoAmIResponse } from "@/types";
+import { ApiConfiguration, ApiErrorResponse, User, WhoAmIResponse } from "@/types";
 import Api from "./Api";
 
-const MODULE = "WhoAmI";
 const URL = "/whoami";
 
 class WhoAmI extends Api {
 
-	constructor(config: WhoAmIConfigParams) {
+	constructor(config: ApiConfiguration) {
 		super(config);
 	}
 

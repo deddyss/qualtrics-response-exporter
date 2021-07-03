@@ -10,7 +10,7 @@ class TestUtil {
 		return JSON.parse(content) as T;
 	}
 
-	public static wrapResponse<T extends ApiResponse>(object: T): AxiosResponse<T> {
+	public static wrapResponse<T>(object: T): AxiosResponse<T> {
 		return { data: object } as AxiosResponse<T>; 
 	}
 

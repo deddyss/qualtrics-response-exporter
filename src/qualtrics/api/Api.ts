@@ -1,11 +1,12 @@
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
-import { ApiConfigParams, ApiErrorResponse, MetaWithError, ApiError } from "@/types";
+import { Stream } from "stream";
+import { ApiConfiguration, ApiErrorResponse, ApiError } from "@/types";
 
 class Api {
 	private baseUrl: string;
 	private apiToken: string;
 
-	constructor (config: ApiConfigParams) {
+	constructor (config: ApiConfiguration) {
 		this.baseUrl = `https://${config.dataCenter}.qualtrics.com/API/v3`;
 		this.apiToken = config.apiToken;
 	}
@@ -24,13 +25,13 @@ class Api {
 		});
 	}
 
-	protected sendHttpGetFileRequest<T>(options: AxiosRequestConfig = {}): Promise<AxiosResponse<T>> {
-		return axios.request<T>({
+	protected sendHttpGetFileStreamRequest(options: AxiosRequestConfig = {}): Promise<AxiosResponse<Stream>> {
+		return axios.request<Stream>({
 			...options,
 			...this.defaultAxiosRequestConfig(options),
 			...{
 				method: "get",
-				responseType: "arraybuffer"
+				responseType: "stream"
 			}
 		});
 	}

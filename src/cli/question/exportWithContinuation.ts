@@ -20,7 +20,6 @@ const exportWithContinuationQuestion: ListQuestionOptions<Answer> = {
 			value: false
 		}
 	],
-	when: (answer: Answer): boolean => answer.exportWithContinuation === undefined,
 	prefix
 };
 

@@ -1,6 +1,6 @@
 import path from "path";
 import fs from "fs";
-import { Answer, Preference } from "@/types";
+import { Answer, Preferences } from "@/types";
 import { settingDirectoryPath } from "@/util";
 import chalk from "chalk";
 
@@ -10,18 +10,18 @@ export const isPreferencesExist = (): boolean => {
 	return fs.existsSync(preferencesFilePath);
 }
 
-export const loadPreferences = (): Preference | null => {
+export const loadPreferences = (): Preferences | null => {
 	if (isPreferencesExist()) {
 		try {
 			const preferences: string = fs.readFileSync(preferencesFilePath, "utf-8");
-			return JSON.parse(preferences) as Preference;
+			return JSON.parse(preferences) as Preferences;
 		}
 		catch (error) {}
 	}
 	return null;
 };
 
-export const showPreferences = (preferences: Preference | null): void => {
+export const showPreferences = (preferences: Preferences | null): void => {
 	if (preferences) {
 		const { lastSelectedSurveys, ...restPreferences } = preferences;
 		console.log("  " +
@@ -39,10 +39,13 @@ export const showPreferences = (preferences: Preference | null): void => {
 };
 
 export const savePreferences = (answer: Answer): void => {
-	const { dataCenter, activeSurveyOnly, selectedSurveys, exportFormat, exportWithContinuation } = answer;
-	const preferences: Preference = { 
+	const { 
+		dataCenter, activeSurveyOnly, selectedSurveys,
+		exportFormat, exportWithContinuation, compressExportFile
+	} = answer;
+	const preferences: Preferences = { 
 		dataCenter, activeSurveyOnly, lastSelectedSurveys: selectedSurveys, 
-		exportFormat, exportWithContinuation
+		exportFormat, exportWithContinuation, compressExportFile
 	};
 	if (!fs.existsSync(settingDirectoryPath)) {
 		fs.mkdirSync(settingDirectoryPath);

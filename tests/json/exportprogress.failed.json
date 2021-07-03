@@ -1,0 +1,11 @@
+{
+	"result": {
+			"fileId": null,
+			"percentComplete": 100,
+			"status": "failed"
+	},
+	"meta": {
+			"requestId": "27c54e41-6e60-4b1c-9bd2-d64f29f289ba",
+			"httpStatus": "200 - OK"
+	}
+}

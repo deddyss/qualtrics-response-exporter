@@ -8,7 +8,6 @@ const exportFormatQuestion: ListQuestionOptions<Answer> = {
 	name: "exportFormat",
 	message: `Please select the ${chalk.bold.yellow("format")} of the export file`,
 	choices: ["csv", "tsv", "json", "ndjson", "spss", "xml"],
-	when: (answer: Answer): boolean => answer.exportFormat === undefined,
 	prefix,
 	suffix: chalk.bold.cyan("!"),
 };

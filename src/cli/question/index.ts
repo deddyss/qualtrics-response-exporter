@@ -6,3 +6,4 @@ export {default as activeSurveyOnlyQuestion} from "./activeSurveyOnly";
 export {default as selectSurveysQuestion} from "./selectSurveys";
 export {default as exportWithContinuationQuestion} from "./exportWithContinuation";
 export {default as exportFormatQuestion} from "./exportFormat";
+export {default as compressExportFileQuestion} from "./compressExportFile";

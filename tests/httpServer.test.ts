@@ -3,6 +3,9 @@ import Denque from "denque";
 
 describe("Internal HTTP Server", () => {
 	test("When a queue is provided and many GET /survey is requested at one time, expect responses in the same order as the queue", async () => {
+		// override console.log for the moment
+		jest.spyOn(console, "log").mockImplementation(() => {});
+
 		const array = ["1", "2", "3", "4", "5"];
 		const queue = new Denque<string>(array);
 		const server = createHttpServer(queue);

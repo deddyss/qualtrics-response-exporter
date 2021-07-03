@@ -1,0 +1,10 @@
+{
+	"result": {
+			"percentComplete": 20,
+			"status": "inProgress"
+	},
+	"meta": {
+			"requestId": "24fe9f7a-6664-46ef-8700-dbdc24f39120",
+			"httpStatus": "200 - OK"
+	}
+}

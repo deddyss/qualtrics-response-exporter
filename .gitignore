@@ -1,2 +1,4 @@
 node_modules/
-dist/setting
+dist/setting/
+dist/output/
+tests/output/

@@ -21,7 +21,6 @@ const dataCenterQuestion: ListQuestionOptions<Answer> = {
 	message: `What is your ${chalk.bold.yellow("data center ID")}`,
 	default: DEFAULT_DATA_CENTER,
 	choices: referenceToChoiceOptions(),
-	when: (answer: Answer): boolean => answer.dataCenter === undefined,
 	prefix,
 	suffix
 };
