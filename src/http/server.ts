@@ -4,10 +4,23 @@ import Denque from "denque";
 import getPort from "get-port";
 import URL from "@/reference/route";
 import { createProgressBar } from "@/util";
+import { ProgressBar, Survey } from "@/types";
 
 const KEY = "QUEUE_SURVEY";
 const lock = new AsyncLock({});
-const progressBar = createProgressBar();
+const progressBar: ProgressBar = createProgressBar();
+
+const findSurvey = (id: string, surveys: Survey[]): Survey | null => {
+	let result: Survey | null = null;
+	for (let index = 0; index < surveys.length; index += 1) {
+		const survey = surveys[index];
+		if (survey.id === id) {
+			result = survey;
+			break;
+		}
+	}
+	return result;
+};
 
 const getSurveyHandler = (queue: Denque<string>): RouteHandlerMethod => {
 	const handler: RouteHandlerMethod = async (request, reply) => {
@@ -15,8 +28,9 @@ const getSurveyHandler = (queue: Denque<string>): RouteHandlerMethod => {
 			if (queue.isEmpty()) {
 				return null;
 			}
+			// TODO:
 			progressBar.increment();
-			// in javascript, "shift" has the same meaning as the common term of "pop" or "remove first element" in a queue based on the FIFO (first in first out) principle 
+			// in javascript, "shift" has the same meaning as the common term of "pop" or "remove first element" in a queue based on the FIFO (first in first out) principle
 			return queue.shift();
 		});
 		if (surveyId !== null) {

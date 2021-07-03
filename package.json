@@ -4,6 +4,7 @@
 	"description": "Simple tool to export Qualtrics all survey responses, automatically",
 	"main": "./dist/main.js",
 	"scripts": {
+		"prebuild": "npm install",
 		"build": "node --no-deprecation ./node_modules/webpack/bin/webpack.js",
 		"start": "node ./dist/main.js",
 		"test": "jest --verbose"
@@ -29,7 +30,6 @@
 		"@types/app-root-path": "^1.2.4",
 		"@types/async-lock": "^1.1.2",
 		"@types/cli-progress": "^3.9.1",
-		"@types/debug": "^4.1.5",
 		"@types/inquirer": "^7.3.2",
 		"@types/jest": "^26.0.23",
 		"@types/node": "^15.12.5",

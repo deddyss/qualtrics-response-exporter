@@ -16,8 +16,8 @@ Please have your Qualtrics API token and data center ID before proceeding. You c
 	> survey 3
 	> ...
 	> survey n
-6. Do you want to export with continuation? It gives you the ability to export new responses since the last export. The last response from the previous file export is the first response from the export with continuation
-	> Yes, I want to enable continuation
+6. Do you want to export with continuation? This gives you the ability to export new responses since the last export. The last response of the previous file export is the first response of the export with continuation
+	> Yes, I want to export with continuation
 	> No, full export please
 7. Please select the format of the export file: csv, tsv, json, ndjson, spss, or xml
 

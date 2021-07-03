@@ -1,6 +1,10 @@
 import { ProgressBar } from "@/types";
 import chalk from "chalk";
 import { SingleBar } from "cli-progress";
+import app from "app-root-path";
+import path from "path";
+
+export const settingDirectoryPath = path.join(app.path, "./setting");
 
 export const prefix = chalk.bold("○");
 export const suffix = chalk.bold.cyan("?");

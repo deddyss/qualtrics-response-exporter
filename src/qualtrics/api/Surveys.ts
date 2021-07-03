@@ -1,17 +1,14 @@
 import { AxiosError, AxiosResponse } from "axios";
 import { ApiError, ApiErrorResponse, ListSurveysResponse, Survey, SurveysConfigParams } from "@/types";
-import Logger from "@/log/Logger";
 import Api from "./Api";
 
 const MODULE = "Surveys";
 const URL = "/surveys";
 
 class Surveys extends Api{
-	private logger: Logger;
 
 	constructor(config: SurveysConfigParams) {
 		super(config);
-		this.logger = new Logger(MODULE);
 	}
 
 	public listActiveSurvey(): Promise<Array<Survey>> {
@@ -38,11 +35,6 @@ class Surveys extends Api{
 	}
 
 	private getSurveys(url: string): Promise<Array<Survey>> {
-		this.logger.debug(
-			"Retrieving surveys from URL %s",
-			url.startsWith("http") ? url : this.getBaseUrl() + url
-		);
-
 		return new Promise<Array<Survey>>((resolve, reject) => {
 			this.sendHttpGetRequest<ListSurveysResponse>({ url })
 				.then((response: AxiosResponse<ListSurveysResponse>) => {
@@ -55,10 +47,10 @@ class Surveys extends Api{
 							})
 							.catch((error: AxiosError<ApiErrorResponse>) => {
 								const apiError = this.parseError(error);
-								// log
-								this.logger.warn(
-									"Cannot retrieve next surveys from URL %s due to error: %o", nextPage, apiError
-								);
+								// // log
+								// this.logger.warn(
+								// 	"Cannot retrieve next surveys from URL %s due to error: %o", nextPage, apiError
+								// );
 								// resolve anyway
 								resolve(surveys);
 							});

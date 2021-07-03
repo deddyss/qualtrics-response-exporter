@@ -5,7 +5,7 @@ npm install --global jshint
 npm install --global jest
 
 npm install --save-dev typescript ts-node tsconfig-paths
-npm install --save-dev jest ts-jest @types/jest @types/debug
+npm install --save-dev jest ts-jest @types/jest
 npm install --save-dev @types/inquirer @types/cli-progress
 npm install --save-dev @types/node
 npm install --save-dev @types/async-lock

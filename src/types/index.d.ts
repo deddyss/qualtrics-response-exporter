@@ -1,9 +1,15 @@
 import { SingleBar } from "cli-progress";
 
+export interface Map<T> {
+	[key: string]: T;
+}
+
 export interface Preference {
 	dataCenter?: string;
 	activeSurveyOnly?: boolean;
 	lastSelectedSurveys?: string[];
+	exportWithContinuation?: boolean;
+	exportFormat?: string;
 }
 
 export interface Answer extends Preference {
@@ -83,12 +89,12 @@ export interface PoolParam {
 	port: number;
 	apiToken: string;
 	dataCenter: string;
+	exportWithContinuation: boolean;
+	exportFormat: string;
 }
-
 export interface RunnableParam extends PoolParam{
 	id: string;
 }
-
 export type Runnable = (param: RunnableParam) => Promise<void>;
 
 export class ProgressBar extends SingleBar {}

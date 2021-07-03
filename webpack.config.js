@@ -14,8 +14,7 @@ module.exports = {
 	entry: path.join(src, "main.ts"),
 	output: {
 		path: dist,
-		filename: "[name].js",
-		clean: true
+		filename: "[name].js"
 	},
 	target: "node",
 	resolve: {

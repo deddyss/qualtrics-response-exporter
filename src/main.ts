@@ -5,11 +5,11 @@ import { spawn, Pool, Worker, FunctionThread } from "threads";
 import Qualtrics from "@/qualtrics";
 import { greeting, info } from "@/cli/statement";
 import { 
-	apiTokenQuestion, dataCenterQuestion, savePreferencesQuestion, activeSurveyOnlyQuestion, selectSurveysQuestion, loadPreferencesQuestion 
+	apiTokenQuestion, dataCenterQuestion, savePreferencesQuestion, activeSurveyOnlyQuestion, selectSurveysQuestion, loadPreferencesQuestion, exportFormatQuestion, exportWithContinuationQuestion 
 } from "@/cli/question";
 import spinner from "@/cli/spinner";
 import { message, sleep, isNotEmpty } from "@/util";
-import { isPreferencesExist, loadPreferences, savePreferences, deletePreferences } from "@/util/preferences";
+import { isPreferencesExist, loadPreferences, savePreferences, deletePreferences, showPreferences } from "@/util/preferences";
 import { Answer, ApiError, PoolParam, Runnable, RunnableParam, Survey, User } from "@/types";
 import { createHttpServer, getAvailablePort } from "@/http/server";
 // @ts-ignore
@@ -75,7 +75,6 @@ const retrieveSurveyList = (answer: Answer): Promise<Survey[]> => {
 			spinner.fail(
 				`${message.survey.fail} (${ apiError.message ? apiError.message : apiError.statusText })`
 			);
-			return;
 			reject();
 		}
 	});
@@ -121,7 +120,11 @@ const main = async () => {
 		if (isPreferencesExist()) {
 			answer = await ask([ loadPreferencesQuestion ], answer);
 			if (answer.loadPreferences) {
-				answer = { ...answer, ...loadPreferences(), ...{ savePreferences: true } };
+				// load preferences
+				const preferences = loadPreferences();
+				showPreferences(preferences);
+				// merge answer
+				answer = { ...answer, ...preferences, ...{ savePreferences: true } };
 			}
 		}
 		// ask data center
@@ -147,11 +150,14 @@ const main = async () => {
 			return;
 		}
 
+		// ask export format and whether user wants to export with continuation
+		answer = await ask([ exportFormatQuestion, exportWithContinuationQuestion ], answer);
+
 		handlePreferences(answer);
 
-		// initiate queue
+		// initiate and fill queue
 		const queue = new Denque<string>(answer.selectedSurveys as string[]);
-		
+
 		const port = await getAvailablePort();
 		const server = createHttpServer(queue);
 		// start internal web server
@@ -160,14 +166,15 @@ const main = async () => {
 		const pool = createPoolAndEnqueueWorker({
 			port,
 			apiToken: answer.apiToken as string,
-			dataCenter: answer.dataCenter as string
+			dataCenter: answer.dataCenter as string,
+			exportWithContinuation: answer.exportWithContinuation as boolean,
+			exportFormat: answer.exportFormat as string
 		});
 
 		await waitUntilAllCompleted(pool);
 	}
 	catch(error) {
 		console.error(error);
-		return;
 	}
 };
 
