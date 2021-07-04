@@ -9,11 +9,11 @@ const lock = new AsyncLock({});
 
 const continuationTokenMapFilePath = path.join(settingDirectoryPath, "./continuation.json");
 
-export const isContinuationTokenMapExist = (): boolean => {
+const isContinuationTokenMapExist = (): boolean => {
 	return fs.existsSync(continuationTokenMapFilePath);
 } 
 
-export const loadContinuationTokenMap = (): Map<string> => {
+const loadContinuationTokenMap = (): Map<string> => {
 	if (isContinuationTokenMapExist()) {
 		try {
 			const continuationTokenMap: string = fs.readFileSync(continuationTokenMapFilePath, "utf-8");
@@ -24,11 +24,22 @@ export const loadContinuationTokenMap = (): Map<string> => {
 	return {};
 };
 
-export const saveContinuationTokenMap = (continuationTokenMap: Map<string>): void => {
+const saveContinuationTokenMap = (): void => {
 	lock.acquire(KEY, () => {
 		if (!fs.existsSync(settingDirectoryPath)) {
 			fs.mkdirSync(settingDirectoryPath);
 		}
 		fs.writeFileSync(continuationTokenMapFilePath, JSON.stringify(continuationTokenMap));	
 	});
+};
+
+const continuationTokenMap: Map<string> = loadContinuationTokenMap();
+
+export const getContinuationToken = (surveyId: string): string | undefined => {
+	return continuationTokenMap[surveyId];
+};
+
+export const putContinuationToken = (surveyId: string, continuationToken: string): void => {
+	continuationTokenMap[surveyId] = continuationToken;
+	saveContinuationTokenMap();
 };

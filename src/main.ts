@@ -10,13 +10,13 @@ import {
 	exportFormatQuestion, exportWithContinuationQuestion, compressExportFileQuestion 
 } from "@/cli/question";
 import spinner from "@/cli/spinner";
-import { message, sleep, isNotEmpty } from "@/util";
+import { message, sleep, isNotEmpty, createOutputDirWithDateTime } from "@/util";
 import {
 	isPreferencesExist, loadPreferences, savePreferences, deletePreferences,
 	showPreferences
 } from "@/util/preferences";
 import {
-	Answer, ApiError, PoolParam, Runnable, RunnableParam, Survey, User
+	Answer, ApiError, PoolOptions, Runnable, RunnableOptions, Survey, User
 } from "@/types";
 import { createHttpServer, getAvailablePort } from "@/http/server";
 // @ts-ignore
@@ -98,8 +98,8 @@ const handlePreferences = (answer: Answer): void => {
 	}
 };
 
-const createPoolAndEnqueueWorker = (param: PoolParam)
-	:Pool<FunctionThread<[param: RunnableParam], void>> => {
+const createPoolAndEnqueueWorker = (options: PoolOptions)
+	:Pool<FunctionThread<[options: RunnableOptions], void>> => {
 	// create worker
 	const worker = new Worker(workerUrl);
 	// create pool
@@ -107,13 +107,13 @@ const createPoolAndEnqueueWorker = (param: PoolParam)
 	// iterate as many as the number of cpu
 	[...Array(os.cpus().length).keys()].forEach((key: number) => {
 		// queue worker
-		pool.queue(run => run({ ...param, ...{ id: key + 1 + "" }}));
+		pool.queue(run => run({ ...options, ...{ id: key + 1 + "" }}));
 	});
 	return pool;
 };
 
 const waitUntilAllCompleted = async (
-	pool: Pool<FunctionThread<[param: RunnableParam], void>>
+	pool: Pool<FunctionThread<[param: RunnableOptions], void>>
 ) => {
 		// wait until all worker completed
 		await pool.completed();
@@ -176,17 +176,20 @@ const main = async () => {
 		const queue = new Denque<string>(answer.selectedSurveys as string[]);
 
 		const port = await getAvailablePort();
-		const server = createHttpServer(queue);
+		const directory = createOutputDirWithDateTime();
+		const server = createHttpServer(queue, surveys, directory);
 		// start internal web server
 		await server.listen(port);
 
 		const pool = createPoolAndEnqueueWorker({
 			port,
+			directory,
 			apiToken: answer.apiToken as string,
 			dataCenter: answer.dataCenter as string,
 			exportWithContinuation: answer.exportWithContinuation as boolean,
 			exportFormat: answer.exportFormat as string,
-			compressExportFile: answer.compressExportFile as boolean
+			compressExportFile: answer.compressExportFile as boolean,
+			surveys
 		});
 
 		await waitUntilAllCompleted(pool);

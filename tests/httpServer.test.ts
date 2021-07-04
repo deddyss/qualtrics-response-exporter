@@ -8,7 +8,7 @@ describe("Internal HTTP Server", () => {
 
 		const array = ["1", "2", "3", "4", "5"];
 		const queue = new Denque<string>(array);
-		const server = createHttpServer(queue);
+		const server = createHttpServer(queue, [], "");
 
 		const promises: Promise<void>[] = [];
 		const responses: Record<string, string> = {};

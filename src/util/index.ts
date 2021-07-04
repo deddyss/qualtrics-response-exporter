@@ -1,8 +1,9 @@
-import { ProgressBar } from "@/types";
+import { ExportFailedSurvey, ProgressBar, Survey } from "@/types";
 import chalk from "chalk";
 import { SingleBar } from "cli-progress";
 import app from "app-root-path";
 import path from "path";
+import fs from "fs";
 
 export const settingDirectoryPath = path.join(app.path, "./setting");
 
@@ -38,6 +39,41 @@ export const sleep = (delay: number = 0): Promise<void> => {
 	});
 };
 
+export const sanitizeFileName = (fileName: string): string => {
+	return fileName.replace(/[/\\?%*:|"<>]/g, "").replace(/\s{2,}/g, " ").trim();
+};
+
+export const createOutputDirWithDateTime = (): string => {
+	const outputDirectoryPath = path.join(app.path, "./output");
+	if (!fs.existsSync(outputDirectoryPath)) {
+		fs.mkdirSync(outputDirectoryPath);
+	}
+
+	const now = new Date();
+	const offset = now.getTimezoneOffset() * 60 * 1000;
+	const localDate = new Date(now.getTime() - offset);
+	const formatted = localDate.toISOString().slice(0, 16).replace(/:/g, ".").replace("T", " ");
+	
+	const result = path.join(outputDirectoryPath, formatted);
+	if (!fs.existsSync(result)) {
+		fs.mkdirSync(result);
+	}
+
+	return result;
+};
+
+export const findSurvey = (id: string, surveys: Survey[]): Survey | null => {
+	let result: Survey | null = null;
+	for (let index = 0; index < surveys.length; index += 1) {
+		const survey = surveys[index];
+		if (survey.id === id) {
+			result = survey;
+			break;
+		}
+	}
+	return result;
+};
+
 export const random = (min: number, max: number): number => {
 	const minRange = Math.ceil(min);
 	const maxRange = Math.floor(max);
@@ -55,4 +91,23 @@ export const createProgressBar = (): ProgressBar => {
 		stopOnComplete: true,
 	});
 	return progressBar;
+};
+
+export const printOutputDirectoryPath = (directory: string): void => {
+	// print new line
+	console.log(`\n${chalk.bold.green("✔")} Exported files are stored at ${directory}`);
+};
+export const printExportFailedSurveys = (exportFailedSurveys: ExportFailedSurvey[]): void => {
+	if (exportFailedSurveys.length === 0) {
+		return;
+	}
+
+	// sort by name
+	exportFailedSurveys.sort((surveyPrev, surveyNext) => surveyPrev.name.localeCompare(surveyNext.name));
+
+	console.log(`${chalk.bold.red("✖")} Response export failed for the following surveys:`);
+	exportFailedSurveys.forEach((survey: ExportFailedSurvey, index: number) => {
+		const number = index + 1;
+		console.log(`  ${number}. ${survey.name} [id: ${survey.id}, ${chalk.red("error")}: ${survey.error}]`);
+	})
 };

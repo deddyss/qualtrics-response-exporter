@@ -62,21 +62,22 @@ export interface ListSurveysResult {
 	nextPage: string | null;
 }
 
-export interface ResponseExportStatus {
+export type ResponseExportStatus = "complete" | "failed" | "inProgress" | undefined;
+export interface ResponseExportProgress {
 	percentComplete: number;
-	status: "complete" | "failed" | "inProgress";
+	status: ResponseExportStatus;
 	continuationToken?: string;
 }
 export interface StartExportRequestData {
 	format: string;
 	compress: boolean;
-	allowContinuation?: string;
+	allowContinuation?: boolean;
 	continuationToken?: string;
 }
-export interface StartExportResult extends ResponseExportStatus{
+export interface StartExportResult extends ResponseExportProgress {
 	progressId: string;
 }
-export interface ExportProgressResult extends ResponseExportStatus{
+export interface ExportProgressResult extends ResponseExportProgress {
 	fileId?: string;
 }
 
@@ -105,17 +106,26 @@ export interface ApiError {
 	message?: string;
 }
 
-export interface PoolParam {
+export interface PoolOptions extends ApiConfiguration {
 	port: number;
-	apiToken: string;
-	dataCenter: string;
+	surveys: Survey[],
 	exportWithContinuation: boolean;
 	exportFormat: string;
 	compressExportFile: boolean;
+	directory: string;
 }
-export interface RunnableParam extends PoolParam{
+export interface RunnableOptions extends PoolOptions{
 	id: string;
 }
-export type Runnable = (param: RunnableParam) => Promise<void>;
+export type Runnable = (options: RunnableOptions) => Promise<void>;
 
 export class ProgressBar extends SingleBar {}
+interface ExportFailedRequestBody {
+	surveyId: string;
+	errorMessage: string;
+}
+export interface ExportFailedSurvey {
+	id: string;
+	name: string;
+	error: string;
+}

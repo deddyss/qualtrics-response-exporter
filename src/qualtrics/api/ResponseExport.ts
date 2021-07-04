@@ -3,7 +3,7 @@ import { AxiosError, AxiosResponse } from "axios";
 import { createWriteStream, WriteStream } from "fs";
 import { Stream } from "stream";
 import { 
-	ApiConfiguration, ApiErrorResponse, ExportProgressResponse, ExportProgressResult,
+	ApiConfiguration, ApiError, ApiErrorResponse, ExportProgressResponse, ExportProgressResult,
 	StartExportRequestData, StartExportResponse, StartExportResult
 } from "@/types";
 import Api from "./Api";
@@ -26,12 +26,18 @@ class ResponseExport extends Api {
 		await startExportLimiter.removeTokens(1);
 
 		return new Promise<StartExportResult>((resolve, reject) => {
-			this.sendHttpPostRequest<StartExportResponse>({ url: startExportUrl(surveyId), data })
-				.then((response: AxiosResponse<StartExportResponse>) => {
+			this.sendHttpPostRequest<StartExportResponse>({ 
+				url: startExportUrl(surveyId),
+				data,
+				headers: {
+					"Content-Type": "application/json"
+				}
+			}).then((response: AxiosResponse<StartExportResponse>) => {
 					resolve(response.data.result);
 				})
 				.catch((error: AxiosError<ApiErrorResponse>) => {
-					reject(this.parseError(error));
+					const apiError: ApiError = this.parseError(error);
+					reject(new Error(apiError.message ? apiError.message : apiError.statusText));
 				});
 		});
 	}
@@ -45,7 +51,8 @@ class ResponseExport extends Api {
 					resolve(response.data.result);
 				})
 				.catch((error: AxiosError<ApiErrorResponse>) => {
-					reject(this.parseError(error));
+					const apiError: ApiError = this.parseError(error);
+					reject(new Error(apiError.message ? apiError.message : apiError.statusText));
 				});
 		});
 	}
@@ -67,6 +74,9 @@ class ResponseExport extends Api {
 					stream.on("close", () => {
 						if (!writeStreamError) {
 							resolve();
+						}
+						else {
+							reject(writeStreamError);
 						}
 					});
 				})
