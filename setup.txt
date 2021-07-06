@@ -13,6 +13,7 @@ npm install --save-dev webpack webpack-cli ts-loader
 npm install --save-dev tsconfig-paths-webpack-plugin
 npm install --save-dev simple-progress-webpack-plugin
 npm install --save-dev terser-webpack-plugin
+npm install --save-dev remove-files-webpack-plugin
 npm install --save-dev threads-plugin
 
 npm install --save tslib

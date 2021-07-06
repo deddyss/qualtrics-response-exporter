@@ -107,12 +107,12 @@ export interface ApiError {
 }
 
 export interface PoolOptions extends ApiConfiguration {
-	port: number;
+	internalApiPort: number;
 	surveys: Survey[],
 	exportWithContinuation: boolean;
 	exportFormat: string;
 	compressExportFile: boolean;
-	directory: string;
+	exportFileDirectory: string;
 }
 export interface RunnableOptions extends PoolOptions{
 	id: string;

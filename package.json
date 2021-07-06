@@ -2,11 +2,11 @@
 	"name": "qualtrics-survey-response-exporter",
 	"version": "1.0.0",
 	"description": "Simple tool to export Qualtrics all survey responses, automatically",
-	"main": "./dist/main.js",
+	"main": "./dist/app.js",
 	"scripts": {
 		"prebuild": "npm install",
 		"build": "node --no-deprecation ./node_modules/webpack/bin/webpack.js",
-		"start": "node ./dist/main.js",
+		"start": "node ./dist/app.js",
 		"test": "jest --verbose --detectOpenHandles"
 	},
 	"repository": {
@@ -34,6 +34,7 @@
 		"@types/jest": "^26.0.23",
 		"@types/node": "^15.12.5",
 		"jest": "^27.0.3",
+		"remove-files-webpack-plugin": "^1.4.5",
 		"simple-progress-webpack-plugin": "^2.0.0",
 		"terser-webpack-plugin": "^5.1.4",
 		"threads-plugin": "^1.4.0",

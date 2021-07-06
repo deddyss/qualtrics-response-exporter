@@ -2,6 +2,7 @@ const TsconfigPathsWebpackPlugin = require("tsconfig-paths-webpack-plugin");
 const ThreadsPlugin = require("threads-plugin");
 const SimpleProgressWebpackPlugin = require("simple-progress-webpack-plugin");
 const TerserWebpackPlugin = require("terser-webpack-plugin");
+const RemoveFilesPlugin = require("remove-files-webpack-plugin");
 const { ContextReplacementPlugin } = require("webpack");
 
 const path = require("path");
@@ -11,7 +12,9 @@ const dist = path.resolve(__dirname, "dist");
 
 module.exports = {
 	mode: "production",
-	entry: path.join(src, "main.ts"),
+	entry: {
+		app: path.join(src, "app.ts")
+	},
 	output: {
 		path: dist,
 		filename: "[name].js"
@@ -26,6 +29,20 @@ module.exports = {
 	plugins: [
 		new ThreadsPlugin(),
 		new ContextReplacementPlugin(/app-root-path/),
+		new RemoveFilesPlugin({
+			before: {
+				test: [
+					{
+						folder: dist,
+						method: (absoluteItemPath) => {
+							return new RegExp(/\.js$/, "m").test(absoluteItemPath);
+						}
+					}
+				],
+				log: false,
+				trash: true
+			}
+		}),
 		new SimpleProgressWebpackPlugin({
 			format: "compact"
 		})

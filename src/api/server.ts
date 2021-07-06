@@ -2,9 +2,11 @@ import fastify, { FastifyInstance, RouteHandlerMethod } from "fastify";
 import AsyncLock from "async-lock";
 import Denque from "denque";
 import getPort from "get-port";
-import URL from "@/reference/route";
-import { createProgressBar, findSurvey, printExportFailedSurveys, printOutputDirectoryPath } from "@/util";
+import { INTERNAL_API_URL } from "@/reference";
+import { findSurvey } from "@/util";
 import { ExportFailedRequestBody, ExportFailedSurvey, ProgressBar, Survey } from "@/types";
+import { printExportFailedSurveys, printNewLine, printOutputDirectoryPath } from "./console";
+import createProgressBar from "./progressBar";
 
 const queueKey = "QUEUE_KEY";
 const queueLock = new AsyncLock();
@@ -79,23 +81,19 @@ const putExportFailedHandler = (surveys: Survey[], directory: string): RouteHand
 	return handler;
 };
 
-const startProgressBar = (total: number): void => {
-	// print new line
-	console.log();
-	progressBar.start(total, 0);
-};
-
-export const createHttpServer = (
+export const createApiServer = (
 	queue: Denque<string>, surveys: Survey[], directory: string
 ): FastifyInstance => {
 	const server = fastify({
 		logger: false
 	});
 
-	startProgressBar(queue.length);
-	server.get(URL.SURVEY, getSurveyHandler(queue));
-	server.put(URL.EXPORT.SUCCESS, putExportSuccessHandler(directory));
-	server.put(URL.EXPORT.FAILED, putExportFailedHandler(surveys, directory));
+	printNewLine();
+	progressBar.start(queue.length, 0);
+
+	server.get(INTERNAL_API_URL.SURVEY, getSurveyHandler(queue));
+	server.put(INTERNAL_API_URL.EXPORT.SUCCESS, putExportSuccessHandler(directory));
+	server.put(INTERNAL_API_URL.EXPORT.FAILED, putExportFailedHandler(surveys, directory));
 
 	return server;
 };

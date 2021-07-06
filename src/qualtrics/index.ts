@@ -1,11 +1,3 @@
-import WhoAmI from "@/qualtrics/api/WhoAmI";
-import Surveys from "@/qualtrics/api/Surveys";
-import ResponseExport from "@/qualtrics/api/ResponseExport";
-
-const Qualtrics = {
-	WhoAmI,
-	Surveys,
-	ResponseExport
-};
-
-export default Qualtrics;
+export {default as WhoAmI} from "@/qualtrics/api/WhoAmI";
+export {default as Surveys} from "@/qualtrics/api/Surveys";
+export {default as ResponseExport} from "@/qualtrics/api/ResponseExport";

@@ -1,17 +1,17 @@
 import AsyncLock from "async-lock";
 import path from "path";
 import fs from "fs";
-import { settingDirectoryPath } from "@/util";
 import { Map } from "@/types";
+import { DIRECTORY } from "@/reference";
 
 const KEY = "CONTINUATION_TOKEN";
 const lock = new AsyncLock({});
 
-const continuationTokenMapFilePath = path.join(settingDirectoryPath, "./continuation.json");
+const continuationTokenMapFilePath = path.join(DIRECTORY.SETTING, "./continuation.json");
 
 const isContinuationTokenMapExist = (): boolean => {
 	return fs.existsSync(continuationTokenMapFilePath);
-} 
+};
 
 const loadContinuationTokenMap = (): Map<string> => {
 	if (isContinuationTokenMapExist()) {
@@ -26,8 +26,8 @@ const loadContinuationTokenMap = (): Map<string> => {
 
 const saveContinuationTokenMap = (): void => {
 	lock.acquire(KEY, () => {
-		if (!fs.existsSync(settingDirectoryPath)) {
-			fs.mkdirSync(settingDirectoryPath);
+		if (!fs.existsSync(DIRECTORY.SETTING)) {
+			fs.mkdirSync(DIRECTORY.SETTING);
 		}
 		fs.writeFileSync(continuationTokenMapFilePath, JSON.stringify(continuationTokenMap));	
 	});

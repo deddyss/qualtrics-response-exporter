@@ -1,8 +1,8 @@
 import axios from "axios";
 import { mocked } from "ts-jest/utils";
 import { ApiErrorResponse, ApiError, WhoAmIResponse } from "@/types";
-import Qualtrics from "@/qualtrics";
 import TestUtil from "./util/TestUtil";
+import { WhoAmI } from "@/qualtrics";
 
 jest.mock("axios");
 const mockedAxios = mocked(axios, true);
@@ -18,7 +18,7 @@ describe("Qualtrics API: Who Am I", () => {
 
 		expect.assertions(1);
 
-		const api = new Qualtrics.WhoAmI({dataCenter: "syd1", apiToken: ""});
+		const api = new WhoAmI({dataCenter: "syd1", apiToken: ""});
 		await expect(api.userInfo()).rejects.toMatchObject<ApiError>({ 
 			status: 400,
 			statusText: "Bad Request" 
@@ -31,7 +31,7 @@ describe("Qualtrics API: Who Am I", () => {
 
 		expect.assertions(1);
 
-		const api = new Qualtrics.WhoAmI({dataCenter: "syd1", apiToken: "INVALID-API-TOKEN"});
+		const api = new WhoAmI({dataCenter: "syd1", apiToken: "INVALID-API-TOKEN"});
 		await expect(api.userInfo()).rejects.toMatchObject<ApiError>({ 
 			status: 401,
 			statusText: "Unauthorized" 
@@ -44,7 +44,7 @@ describe("Qualtrics API: Who Am I", () => {
 
 		expect.assertions(2);
 
-		const api = new Qualtrics.WhoAmI({dataCenter: "syd1", apiToken: "VALID-API-TOKEN"});
+		const api = new WhoAmI({dataCenter: "syd1", apiToken: "VALID-API-TOKEN"});
 		const user = await (api.userInfo());
 
 		expect(mockedAxios.request).toBeCalledTimes(1);

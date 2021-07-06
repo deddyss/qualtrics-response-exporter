@@ -1,7 +1,7 @@
 import { Question } from "inquirer";
 import chalk from "chalk";
-import { prefix, suffix } from "@/util";
 import { Answer } from "@/types";
+import { prefix, suffix } from "./options";
 
 const compressExportFileQuestion: Question<Answer> = {
 	type: "confirm",

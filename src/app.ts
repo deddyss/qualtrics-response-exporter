@@ -1,26 +1,23 @@
-import inquirer, { QuestionCollection } from "inquirer";
-import Denque from "denque";
 import os from "os";
+import Denque from "denque";
+import inquirer, { QuestionCollection } from "inquirer";
 import { spawn, Pool, Worker, FunctionThread } from "threads";
-import Qualtrics from "@/qualtrics";
+import { Surveys, WhoAmI } from "@/qualtrics";
 import { greeting, info } from "@/cli/statement";
-import { 
+import {
 	apiTokenQuestion, dataCenterQuestion, savePreferencesQuestion,
 	activeSurveyOnlyQuestion, selectSurveysQuestion, loadPreferencesQuestion,
 	exportFormatQuestion, exportWithContinuationQuestion, compressExportFileQuestion 
 } from "@/cli/question";
 import spinner from "@/cli/spinner";
-import { message, sleep, isNotEmpty, createOutputDirWithDateTime } from "@/util";
-import {
-	isPreferencesExist, loadPreferences, savePreferences, deletePreferences,
-	showPreferences
-} from "@/util/preferences";
-import {
-	Answer, ApiError, PoolOptions, Runnable, RunnableOptions, Survey, User
-} from "@/types";
-import { createHttpServer, getAvailablePort } from "@/http/server";
+import { createApiServer, getAvailablePort } from "@/api/server";
+import { sleep, isNotEmpty, safeCurrentDateTimePathName, createOutputDirectory } from "@/util";
+import { isPreferencesExist, loadPreferences, savePreferences, deletePreferences, showPreferences } from "@/util/setting";
+import { Answer, ApiError, PoolOptions, Runnable, RunnableOptions, Survey, User } from "@/types";
+import { INFORMATION } from "@/reference";
+
 // @ts-ignore
-import workerUrl from "threads-plugin/dist/loader?name=main!./worker.ts";
+import workerUrl from "threads-plugin/dist/loader?name=app!./worker.ts";
 
 const showGreetingAndInformation = async () => {
 	console.clear();
@@ -35,11 +32,11 @@ const ask = (questions: QuestionCollection, initialAnswer?: Answer): Promise<Ans
 	return inquirer.prompt<Answer>(questions, initialAnswer);
 }; 
 
-const loadUserInformation = (answer: Answer): Promise<User> => {
+const loadUserInformationFromQualtrics = (answer: Answer): Promise<User> => {
 	return new Promise(async (resolve, reject) => {
-		spinner.start(message.user.load);
+		spinner.start(INFORMATION.USER.LOAD);
 
-		let whoAmIApi = new Qualtrics.WhoAmI({
+		let whoAmIApi = new WhoAmI({
 			apiToken: answer.apiToken as string,
 			dataCenter: answer.dataCenter as string
 		});
@@ -52,19 +49,19 @@ const loadUserInformation = (answer: Answer): Promise<User> => {
 		catch(error) {
 			const apiError = error as ApiError;
 			spinner.fail(
-				`${message.user.fail} (${ apiError.message ? apiError.message : apiError.statusText })`
+				`${INFORMATION.USER.FAIL} (${ apiError.message ? apiError.message : apiError.statusText })`
 			);
 			reject();
 		}
 	});
 };
 
-const retrieveSurveyList = (answer: Answer): Promise<Survey[]> => {
+const retrieveSurveyListFromQualtrics = (answer: Answer): Promise<Survey[]> => {
 	return new Promise(async (resolve, reject) => {
 		spinner.start(answer.activeSurveyOnly === true ?
-			message.survey.load.active : message.survey.load.all
+			INFORMATION.SURVEY.LOAD.ACTIVE : INFORMATION.SURVEY.LOAD.ALL
 		);
-		const surveysApi = new Qualtrics.Surveys({
+		const surveysApi = new Surveys({
 			apiToken: answer.apiToken as string,
 			dataCenter: answer.dataCenter as string
 		});
@@ -82,7 +79,7 @@ const retrieveSurveyList = (answer: Answer): Promise<Survey[]> => {
 		catch(error) {
 			const apiError = error as ApiError;
 			spinner.fail(
-				`${message.survey.fail} (${ apiError.message ? apiError.message : apiError.statusText })`
+				`${INFORMATION.SURVEY.FAIL} (${ apiError.message ? apiError.message : apiError.statusText })`
 			);
 			reject();
 		}
@@ -105,19 +102,20 @@ const createPoolAndEnqueueWorker = (options: PoolOptions)
 	// create pool
 	const pool = Pool(() => spawn<Runnable>(worker), os.cpus().length);
 	// iterate as many as the number of cpu
-	[...Array(os.cpus().length).keys()].forEach((key: number) => {
-		// queue worker
-		pool.queue(run => run({ ...options, ...{ id: key + 1 + "" }}));
+	[...Array(os.cpus().length).keys()].forEach((index: number) => {
+		// queue the worker
+		pool.queue(run => run({ ...options, ...{ id: index + 1 + "" }}));
 	});
 	return pool;
 };
 
-const waitUntilAllCompleted = async (
+const waitUntilAllWorkerCompleted = async (
 	pool: Pool<FunctionThread<[param: RunnableOptions], void>>
 ) => {
 		// wait until all worker completed
 		await pool.completed();
 		await pool.terminate();
+		// we need this to gracefully shutdown the internal api server (fastify)
 		process.kill(process.pid, "SIGTERM");
 };
 
@@ -142,7 +140,7 @@ const main = async () => {
 		// ask data center
 		answer = await ask([ dataCenterQuestion ], answer);
 
-		user = await loadUserInformation(answer);
+		user = await loadUserInformationFromQualtrics(answer);
 		// ask if user wants to save preferences and / or retrieve only action surveys
 		answer = await ask([
 				savePreferencesQuestion(
@@ -153,7 +151,7 @@ const main = async () => {
 			answer
 		);
 
-		surveys = await retrieveSurveyList(answer);
+		surveys = await retrieveSurveyListFromQualtrics(answer);
 		if (isNotEmpty(surveys)) {
 			// ask user to select some surveys to export
 			answer = await ask([ selectSurveysQuestion(surveys, answer) ], answer);
@@ -175,15 +173,16 @@ const main = async () => {
 		// initiate and fill queue
 		const queue = new Denque<string>(answer.selectedSurveys as string[]);
 
-		const port = await getAvailablePort();
-		const directory = createOutputDirWithDateTime();
-		const server = createHttpServer(queue, surveys, directory);
-		// start internal web server
-		await server.listen(port);
+		const exportFileDirectory = createOutputDirectory(safeCurrentDateTimePathName());
+		const internalApiServer = createApiServer(queue, surveys, exportFileDirectory);
 
-		const pool = createPoolAndEnqueueWorker({
-			port,
-			directory,
+		// start internal api server
+		const internalApiPort = await getAvailablePort();
+		await internalApiServer.listen(internalApiPort);
+
+		const workerPool = createPoolAndEnqueueWorker({
+			internalApiPort,
+			exportFileDirectory,
 			apiToken: answer.apiToken as string,
 			dataCenter: answer.dataCenter as string,
 			exportWithContinuation: answer.exportWithContinuation as boolean,
@@ -192,10 +191,12 @@ const main = async () => {
 			surveys
 		});
 
-		await waitUntilAllCompleted(pool);
+		await waitUntilAllWorkerCompleted(workerPool);
 	}
 	catch(error) {
-		console.error(error);
+		if (error) {
+			console.error(error);
+		}
 	}
 };
 

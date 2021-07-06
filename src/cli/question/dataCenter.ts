@@ -1,8 +1,8 @@
 import { ChoiceOptions, ListQuestionOptions } from "inquirer";
 import chalk from "chalk";
-import { prefix, suffix } from "@/util";
+import { DATA_CENTERS } from "@/reference";
 import { Answer } from "@/types";
-import DATA_CENTERS from "@/reference/dataCenter";
+import { prefix, suffix } from "./options";
 
 const DEFAULT_DATA_CENTER = "syd1";
 

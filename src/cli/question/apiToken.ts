@@ -1,6 +1,6 @@
 import { PasswordQuestionOptions } from "inquirer";
 import chalk from "chalk";
-import { prefix, suffix } from "@/util";
+import { prefix, suffix } from "./options";
 
 const apiTokenQuestion: PasswordQuestionOptions = {
 	type: "password",

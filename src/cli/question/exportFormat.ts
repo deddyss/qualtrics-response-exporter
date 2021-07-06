@@ -1,7 +1,7 @@
 import { ListQuestionOptions } from "inquirer";
 import chalk from "chalk";
-import { prefix } from "@/util";
 import { Answer } from "@/types";
+import { prefix } from "./options";
 
 const exportFormatQuestion: ListQuestionOptions<Answer> = {
 	type: "list",

@@ -1,10 +1,10 @@
 import path from "path";
 import fs from "fs";
-import { Answer, Preferences } from "@/types";
-import { settingDirectoryPath } from "@/util";
 import chalk from "chalk";
+import { Answer, Preferences } from "@/types";
+import { DIRECTORY } from "@/reference";
 
-const preferencesFilePath = path.join(settingDirectoryPath, "./preferences.json");
+const preferencesFilePath = path.join(DIRECTORY.SETTING, "./preferences.json");
 
 export const isPreferencesExist = (): boolean => {
 	return fs.existsSync(preferencesFilePath);
@@ -47,8 +47,8 @@ export const savePreferences = (answer: Answer): void => {
 		dataCenter, activeSurveyOnly, lastSelectedSurveys: selectedSurveys, 
 		exportFormat, exportWithContinuation, compressExportFile
 	};
-	if (!fs.existsSync(settingDirectoryPath)) {
-		fs.mkdirSync(settingDirectoryPath);
+	if (!fs.existsSync(DIRECTORY.SETTING)) {
+		fs.mkdirSync(DIRECTORY.SETTING);
 	}
 	fs.writeFileSync(preferencesFilePath, JSON.stringify(preferences));
 };
