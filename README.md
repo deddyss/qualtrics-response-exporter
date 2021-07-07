@@ -30,11 +30,15 @@ If you have so many [Qualtrics](https://www.qualtrics.com) surveys and want to e
    ```sh
    git clone https://github.com/deddyss/qualtrics-survey-response-exporter.git
    ```
-3. Install NPM packages
+3. Go to project directory
+   ```sh
+   cd qualtrics-survey-response-exporter
+   ```
+4. Install NPM packages
    ```sh
    npm install
    ```
-4. Build the app
+5. Build the app
    ```sh
    npm run build
    ```
@@ -61,6 +65,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 * [Ora](https://github.com/sindresorhus/ora)
 * [Get-port](https://github.com/sindresorhus/get-port)
 * [App-root-path](https://github.com/inxilpro/node-app-root-path)
+* [Pino](https://getpino.io/)
 * [Webpack](https://webpack.js.org/)
 * [Tsconfig-paths-webpack-plugin](https://github.com/dividab/tsconfig-paths-webpack-plugin)
 * [Terser-webpack-plugin](https://github.com/webpack-contrib/terser-webpack-plugin)

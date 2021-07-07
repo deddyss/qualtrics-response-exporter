@@ -1,11 +1,17 @@
 import axios from "axios";
 import path from "path";
 import { expose } from "threads";
+import { Logger } from "pino";
 import { ResponseExport } from "@/qualtrics";
 import { ExportFailedRequestBody, Runnable, RunnableOptions, StartExportRequestData } from "@/types";
-import { findSurvey, random, sanitizeFileName, sleep } from "@/util";
+import { createLogger, findSurvey, random, sanitizeFileName, sleep } from "@/util";
 import { getContinuationToken, putContinuationToken } from "@/util/setting";
 import { INTERNAL_API_URL } from "@/reference";
+
+let log: Logger;
+const initLog = (options: RunnableOptions): void => {
+	log = createLogger(options.logFilePath);
+};
 
 const internalApiBaseUrl = (options: RunnableOptions) => {
 	return `http://localhost:${options.internalApiPort}`;
@@ -62,7 +68,9 @@ const notifyInternalApiThatExportFailed = async (
 	});
 }
 
-const startQualtricsResponseExport = async (api: ResponseExport, surveyId: string, options: RunnableOptions) => {
+const startQualtricsResponseExport = async (
+	api: ResponseExport, surveyId: string, options: RunnableOptions
+) => {
 	const data = {
 		format: options.exportFormat,
 		compress: options.compressExportFile
@@ -76,11 +84,17 @@ const startQualtricsResponseExport = async (api: ResponseExport, surveyId: strin
 	}
 
 	const result = await api.startExport(surveyId, data);
+	log.debug("(worker#%s) startExportResult[%s]: %o", options.id, surveyId, result);
+
 	return result.progressId;
 };
 
-const getQualtricsResponseExportProgress = async (api: ResponseExport, surveyId: string, progressId: string) => {
+const getQualtricsResponseExportProgress = async (
+	api: ResponseExport, surveyId: string, progressId: string, options: RunnableOptions
+) => {
 	const result = await api.getExportProgress(surveyId, progressId);
+	log.debug("(worker#%s) exportProgressResult[%s]: %o", options.id, surveyId, result);
+
 	return result;
 };
 
@@ -92,6 +106,7 @@ const getQualtricsResponseExportFile = async (
 		+ "." + options.exportFormat
 		+ (options.compressExportFile ? ".zip" : "");
 	const filePath = path.join(options.exportFileDirectory, fileName);
+	log.debug("(worker#%s) exportFilePath[%s]: %s", options.id, surveyId, filePath);
 
 	await api.getExportFile(surveyId, fileId, filePath);
 };
@@ -101,13 +116,13 @@ const qualtricsResponseExportProcess = async (surveyId: string, options: Runnabl
 	const progressId = await startQualtricsResponseExport(qualtricsApi, surveyId, options);
 	let exportProgress;
 
-	// loop until completed or failed
 	do {
 		// wait
 		await sleep(random(1000, 5000));
 	
-		exportProgress = await getQualtricsResponseExportProgress(qualtricsApi, surveyId, progressId);
+		exportProgress = await getQualtricsResponseExportProgress(qualtricsApi, surveyId, progressId, options);
 	}
+	// loop until completed or failed
 	while (exportProgress.status === "inProgress");
 
 	if (exportProgress.status === "complete") {
@@ -121,6 +136,8 @@ const qualtricsResponseExportProcess = async (surveyId: string, options: Runnabl
 };
 
 const run: Runnable = async (options: RunnableOptions) => {
+	initLog(options);
+
 	let surveyId: string | null;
 	while ((surveyId = await getSurveyIdFromInternalApi(options)) !== null) {
 		try {
@@ -129,6 +146,7 @@ const run: Runnable = async (options: RunnableOptions) => {
 		}
 		catch (err) {
 			const error = err as Error;
+			log.error("(worker#%s) [%s] %s", options.id, surveyId, error.message);
 			await notifyInternalApiThatExportFailed(surveyId, error.message, options);
 		}
 		// wait

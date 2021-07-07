@@ -1,5 +1,6 @@
 import path from "path";
 import fs from "fs";
+import pino, { Logger } from "pino";
 import { DIRECTORY } from "@/reference";
 import { Survey } from "@/types";
 
@@ -32,7 +33,7 @@ export const safeCurrentDateTimePathName = (): string => {
 	const now = new Date();
 	const offset = now.getTimezoneOffset() * 60 * 1000;
 	const localDate = new Date(now.getTime() - offset);
-	const result = localDate.toISOString().slice(0, 16).replace(/:/g, ".").replace("T", " ");
+	const result = localDate.toISOString().slice(0, 19).replace(/:/g, ".").replace("T", " ");
 
 	return result;
 };
@@ -54,6 +55,22 @@ export const createLogFile = (name: string): string => {
 		fs.closeSync(fs.openSync(filePath, "w"));
 	}
 	return filePath;
+};
+
+export const createLogger = (filePath: string): Logger => {
+	const destination = pino.destination(filePath);
+	const logger = pino(
+		{
+			prettyPrint: {
+				colorize: false,
+				translateTime: true
+			},
+			level: "debug",
+			redact: ["*.apiToken"]
+		},
+		destination
+	);
+	return logger;
 };
 
 export const findSurvey = (id: string, surveys: Survey[]): Survey | null => {

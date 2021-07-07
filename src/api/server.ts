@@ -2,6 +2,7 @@ import fastify, { FastifyInstance, RouteHandlerMethod } from "fastify";
 import AsyncLock from "async-lock";
 import Denque from "denque";
 import getPort from "get-port";
+import { Logger } from "pino";
 import { INTERNAL_API_URL } from "@/reference";
 import { findSurvey } from "@/util";
 import { ExportFailedRequestBody, ExportFailedSurvey, ProgressBar, Survey } from "@/types";
@@ -27,7 +28,10 @@ const getSurveyHandler = (queue: Denque<string>): RouteHandlerMethod => {
 			// in javascript, "shift" has the same meaning as the common term of "pop"
 			// or "remove first element" in a queue based on the FIFO (first in first out)
 			// principle
-			return queue.shift();
+			const surveyId = queue.shift();
+			reply.log.debug("surveyId: %s", surveyId);
+
+			return surveyId;
 		});
 		if (surveyId !== null) {
 			return surveyId;
@@ -62,11 +66,15 @@ const putExportFailedHandler = (surveys: Survey[], directory: string): RouteHand
 		await exportLock.acquire<void>(exportKey, () => {
 			const data = request.body as ExportFailedRequestBody;
 			const survey = findSurvey(data.surveyId, surveys);
-			exportFailedSurveys.push({
+			const exportFailedSurvey = {
 				id: data.surveyId,
 				name: survey ? survey.name : data.surveyId,
 				error: data.errorMessage
-			});
+			} as ExportFailedSurvey;
+			// log
+			request.log.debug(exportFailedSurvey);
+			// push to list of export-failed survey
+			exportFailedSurveys.push(exportFailedSurvey);
 
 			doneExportCounter += 1;
 			if (doneExportCounter === progressBar.getTotal()) {
@@ -82,10 +90,10 @@ const putExportFailedHandler = (surveys: Survey[], directory: string): RouteHand
 };
 
 export const createApiServer = (
-	queue: Denque<string>, surveys: Survey[], directory: string
+	queue: Denque<string>, surveys: Survey[], directory: string, log?: Logger
 ): FastifyInstance => {
 	const server = fastify({
-		logger: false
+		logger: log ? log : false
 	});
 
 	printNewLine();

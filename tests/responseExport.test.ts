@@ -3,7 +3,7 @@ import path from "path";
 import fs from "fs";
 import { Readable } from "stream";
 import { mocked } from "ts-jest/utils";
-import { ApiErrorResponse, ApiError, StartExportResponse, ExportProgressResult, ExportProgressResponse } from "@/types";
+import { ApiErrorResponse, StartExportResponse, ExportProgressResponse } from "@/types";
 import TestUtil from "./util/TestUtil";
 import { ResponseExport } from "@/qualtrics";
 

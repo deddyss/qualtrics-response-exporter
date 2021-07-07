@@ -1,8 +1,7 @@
-import { CheckboxChoiceOptions, CheckboxQuestionOptions } from "inquirer";
-import Separator from "inquirer/lib/objects/separator";
+import { CheckboxChoiceOptions, CheckboxQuestionOptions, Separator } from "inquirer";
 import chalk from "chalk";
 import { Answer, Survey } from "@/types";
-import { prefix, suffix } from "./options";
+import { prefix } from "./options";
 
 const setPrefixNumber = (choices: CheckboxChoiceOptions[]): void => {
 	const padLength = choices.length.toString().length;

@@ -113,6 +113,7 @@ export interface PoolOptions extends ApiConfiguration {
 	exportFormat: string;
 	compressExportFile: boolean;
 	exportFileDirectory: string;
+	logFilePath: string;
 }
 export interface RunnableOptions extends PoolOptions{
 	id: string;

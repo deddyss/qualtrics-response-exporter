@@ -2,6 +2,7 @@ import os from "os";
 import Denque from "denque";
 import inquirer, { QuestionCollection } from "inquirer";
 import { spawn, Pool, Worker, FunctionThread } from "threads";
+import { Logger } from "pino";
 import { Surveys, WhoAmI } from "@/qualtrics";
 import { greeting, info } from "@/cli/statement";
 import {
@@ -11,7 +12,7 @@ import {
 } from "@/cli/question";
 import spinner from "@/cli/spinner";
 import { createApiServer, getAvailablePort } from "@/api/server";
-import { sleep, isNotEmpty, safeCurrentDateTimePathName, createOutputDirectory } from "@/util";
+import { sleep, isNotEmpty, safeCurrentDateTimePathName, createOutputDirectory, createLogger, createLogFile } from "@/util";
 import { isPreferencesExist, loadPreferences, savePreferences, deletePreferences, showPreferences } from "@/util/setting";
 import { Answer, ApiError, PoolOptions, Runnable, RunnableOptions, Survey, User } from "@/types";
 import { INFORMATION } from "@/reference";
@@ -115,12 +116,15 @@ const waitUntilAllWorkerCompleted = async (
 		// wait until all worker completed
 		await pool.completed();
 		await pool.terminate();
-		// we need this to gracefully shutdown the internal api server (fastify)
-		process.kill(process.pid, "SIGTERM");
 };
 
 const main = async () => {
 	let answer: Answer, user: User, surveys: Survey[];
+
+	// initiate log
+	const uniquePathName: string = safeCurrentDateTimePathName();
+	const logFilePath: string = createLogFile(uniquePathName);
+	const log: Logger = createLogger(logFilePath);
 
 	try {
 		await showGreetingAndInformation();
@@ -139,8 +143,11 @@ const main = async () => {
 		}
 		// ask data center
 		answer = await ask([ dataCenterQuestion ], answer);
+		log.info("dataCenter: %s", answer.dataCenter)
 
 		user = await loadUserInformationFromQualtrics(answer);
+		log.info("user: %s %s (brand: %s)", user.firstName, user.lastName, user.brandId);
+
 		// ask if user wants to save preferences and / or retrieve only action surveys
 		answer = await ask([
 				savePreferencesQuestion(
@@ -150,6 +157,7 @@ const main = async () => {
 			],
 			answer
 		);
+		log.info("activeSurveyOnly: %s", answer.activeSurveyOnly);
 
 		surveys = await retrieveSurveyListFromQualtrics(answer);
 		if (isNotEmpty(surveys)) {
@@ -167,14 +175,17 @@ const main = async () => {
 		answer = await ask([
 			exportFormatQuestion, exportWithContinuationQuestion, compressExportFileQuestion
 		], answer);
+		log.info("exportFormat: %s", answer.exportFormat);
+		log.info("exportWithContinuation: %s", answer.exportWithContinuation);
+		log.info("compressExportFile: %s", answer.compressExportFile);
 
 		handlePreferences(answer);
 
 		// initiate and fill queue
 		const queue = new Denque<string>(answer.selectedSurveys as string[]);
 
-		const exportFileDirectory = createOutputDirectory(safeCurrentDateTimePathName());
-		const internalApiServer = createApiServer(queue, surveys, exportFileDirectory);
+		const exportFileDirectory = createOutputDirectory(uniquePathName);
+		const internalApiServer = createApiServer(queue, surveys, exportFileDirectory, log);
 
 		// start internal api server
 		const internalApiPort = await getAvailablePort();
@@ -183,6 +194,7 @@ const main = async () => {
 		const workerPool = createPoolAndEnqueueWorker({
 			internalApiPort,
 			exportFileDirectory,
+			logFilePath,
 			apiToken: answer.apiToken as string,
 			dataCenter: answer.dataCenter as string,
 			exportWithContinuation: answer.exportWithContinuation as boolean,
@@ -192,10 +204,12 @@ const main = async () => {
 		});
 
 		await waitUntilAllWorkerCompleted(workerPool);
+		await internalApiServer.close();
 	}
 	catch(error) {
 		if (error) {
 			console.error(error);
+			log.error(error);
 		}
 	}
 };
