@@ -63,7 +63,7 @@ export const createLogger = (filePath: string): Logger => {
 		{
 			prettyPrint: {
 				colorize: false,
-				translateTime: true
+				translateTime: "SYS:yyyy-mm-dd HH:MM:ss.l"
 			},
 			level: "debug",
 			redact: ["*.apiToken"]
