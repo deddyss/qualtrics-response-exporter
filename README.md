@@ -28,11 +28,11 @@ If you have so many [Qualtrics](https://www.qualtrics.com) surveys and want to e
 1. Open the terminal
 2. Clone the repo
    ```sh
-   git clone https://github.com/deddyss/qualtrics-survey-response-exporter.git
+   git clone https://github.com/deddyss/qualtrics-response-exporter.git
    ```
 3. Go to project directory
    ```sh
-   cd qualtrics-survey-response-exporter
+   cd qualtrics-response-exporter
    ```
 4. Install NPM packages
    ```sh
