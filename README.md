@@ -1,4 +1,4 @@
-# Qualtrics Survey Response Exporter
+# Qualtrics Response Exporter
 Simple tool to export survey responses automatically
 
 

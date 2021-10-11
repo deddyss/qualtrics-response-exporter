@@ -2,4 +2,3 @@ node_modules/
 dist/setting/
 dist/log/
 dist/output/
-tests/output/

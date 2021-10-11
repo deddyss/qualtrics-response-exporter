@@ -209,7 +209,7 @@ const main = async () => {
 	catch(error) {
 		if (error) {
 			console.error(error);
-			log.error(error);
+			log.error(error as any);
 		}
 	}
 };
